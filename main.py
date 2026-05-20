@@ -11,7 +11,7 @@ ON employees.officeCode = offices.officeCode
 WHERE offices.city = 'Boston';
 """, conn)
 
-df_no_employees = pd.read_sql("""
+df_zero_emp = pd.read_sql("""
 SELECT offices.officeCode, offices.city
 FROM offices
 LEFT JOIN employees
@@ -117,7 +117,8 @@ JOIN orders
 ON orderdetails.orderNumber = orders.orderNumber
 GROUP BY orderdetails.productCode
 HAVING COUNT(DISTINCT orders.customerNumber) < 20
-);
+)
+ORDER BY employees.firstName, employees.lastName;
 """, conn)
 
 conn.close()
