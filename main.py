@@ -4,14 +4,14 @@ import pandas as pd
 conn = sqlite3.connect("data.sqlite")
 
 df_boston = pd.read_sql("""
-SELECT firstName, lastName, jobTitle
+SELECT employees.firstName, employees.lastName
 FROM employees
 JOIN offices
 ON employees.officeCode = offices.officeCode
 WHERE offices.city = 'Boston';
 """, conn)
 
-df_offices = pd.read_sql("""
+df_no_employees = pd.read_sql("""
 SELECT offices.officeCode, offices.city
 FROM offices
 LEFT JOIN employees
@@ -27,7 +27,7 @@ ON employees.officeCode = offices.officeCode
 ORDER BY employees.firstName, employees.lastName;
 """, conn)
 
-df_customer = pd.read_sql("""
+df_contacts = pd.read_sql("""
 SELECT contactFirstName, contactLastName, phone, salesRepEmployeeNumber
 FROM customers
 WHERE customerNumber NOT IN (
@@ -38,10 +38,8 @@ ORDER BY contactLastName;
 """, conn)
 
 df_payment = pd.read_sql("""
-SELECT customers.contactFirstName,
-customers.contactLastName,
-payments.amount,
-payments.paymentDate
+SELECT customers.contactFirstName, customers.contactLastName,
+payments.amount, payments.paymentDate
 FROM customers
 JOIN payments
 ON customers.customerNumber = payments.customerNumber
@@ -61,7 +59,7 @@ HAVING AVG(customers.creditLimit) > 90000
 ORDER BY numberOfCustomers DESC;
 """, conn)
 
-df_product = pd.read_sql("""
+df_product_sold = pd.read_sql("""
 SELECT products.productName,
 COUNT(orderdetails.orderNumber) AS numorders,
 SUM(orderdetails.quantityOrdered) AS totalunits
@@ -85,7 +83,7 @@ GROUP BY products.productName, products.productCode
 ORDER BY numpurchasers DESC;
 """, conn)
 
-df_office_customers = pd.read_sql("""
+df_customers = pd.read_sql("""
 SELECT offices.officeCode,
 offices.city,
 COUNT(customers.customerNumber) AS n_customers
@@ -97,7 +95,7 @@ ON employees.employeeNumber = customers.salesRepEmployeeNumber
 GROUP BY offices.officeCode, offices.city;
 """, conn)
 
-df_low_products = pd.read_sql("""
+df_under_20 = pd.read_sql("""
 SELECT DISTINCT employees.employeeNumber,
 employees.firstName,
 employees.lastName,
@@ -123,4 +121,5 @@ HAVING COUNT(DISTINCT orders.customerNumber) < 20
 """, conn)
 
 conn.close()
+
 
